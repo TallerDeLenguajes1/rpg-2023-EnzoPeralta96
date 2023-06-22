@@ -17,7 +17,7 @@ namespace GeneracionPersonajes
         private int fuerza;
         private int nivel;
         private int armadura;
-        private int salud;
+        private double salud;
 
         public string Nombre { get => nombre; set => nombre = value; }
         public string Apodo { get => apodo; set => apodo = value; }
@@ -28,10 +28,10 @@ namespace GeneracionPersonajes
         public int Fuerza { get => fuerza; set => fuerza = value; }
         public int Nivel { get => nivel; set => nivel = value; }
         public int Armadura { get => armadura; set => armadura = value; }
-        public int Salud { get => salud; set => salud = value; }
+        public double Salud { get => salud; set => salud = value; }
         public TipoPersonaje Team { get => team; set => team = value; }
 
-        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, int salud)
+        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, double salud)
         {
             Team = team;
             Nombre = nombre;
@@ -63,13 +63,13 @@ namespace GeneracionPersonajes
             int fuerza = ValorAleatorio(1,11);
             int nivel = ValorAleatorio(1,11);
             int armadura = ValorAleatorio(1,10);
-            int salud = 100;
+            double salud = 100;
             Personaje Nuevo = new Personaje(team,nombre,apodo,/*fechaNac,*/edadPersonaje,velocidad,destreza,fuerza,nivel,armadura,salud);
 
             return Nuevo;
         }
 
-        static int ValorAleatorio(int a, int b){
+        static public int ValorAleatorio(int a, int b){
             Random NumeroAletorio = new Random();
             return NumeroAletorio.Next(a,b);
         }
