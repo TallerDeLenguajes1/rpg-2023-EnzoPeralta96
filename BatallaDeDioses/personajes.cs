@@ -1,9 +1,13 @@
-using System.Text.Json;
-namespace GeneracionPersonajes
+
+namespace Personajes
 {
     public enum TipoPersonaje{
-        Dios=1,
-        Humano=2
+        DiosNordico = 1,
+        DiosGriego = 2,
+        DiosEjipcio = 3,
+        DiosIndu = 4,
+        Demonio = 5, 
+        Humano = 6
     }
     public class Personaje
     {
@@ -18,6 +22,7 @@ namespace GeneracionPersonajes
         private int nivel;
         private int armadura;
         private double salud;
+        private string frase;
 
         public string Nombre { get => nombre; set => nombre = value; }
         public string Apodo { get => apodo; set => apodo = value; }
@@ -30,8 +35,9 @@ namespace GeneracionPersonajes
         public int Armadura { get => armadura; set => armadura = value; }
         public double Salud { get => salud; set => salud = value; }
         public TipoPersonaje Team { get => team; set => team = value; }
+        public string Frase { get => frase; set => frase = value; }
 
-        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, double salud)
+        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, double salud,string frase)
         {
             Team = team;
             Nombre = nombre;
@@ -44,11 +50,13 @@ namespace GeneracionPersonajes
             Nivel = nivel;
             Armadura = armadura;
             Salud = salud;
+            Frase = frase;
         }
     }
     public class FabricaPersonajes
     {
-        static public Personaje CrearPersonaje(TipoPersonaje team, string nombre, String apodo){
+        static public Personaje CrearPersonaje(int nroTipo, string nombre, String apodo,string fraseCampeon)
+        {
 
            /* int yearNac = ValorAleatorio(1,1900);   
             int  mesNac = ValorAleatorio(1,13);
@@ -58,13 +66,62 @@ namespace GeneracionPersonajes
             DateTime FechaActual = DateTime.Now;
             int edadPersonaje = FechaActual.Year - fechaNac.Year;*/
             int edadPersonaje = ValorAleatorio(0,300);
-            int velocidad = ValorAleatorio(1,11);
-            int destreza = ValorAleatorio(1,6);
-            int fuerza = ValorAleatorio(1,11);
-            int nivel = ValorAleatorio(1,11);
-            int armadura = ValorAleatorio(1,10);
             double salud = 100;
-            Personaje Nuevo = new Personaje(team,nombre,apodo,/*fechaNac,*/edadPersonaje,velocidad,destreza,fuerza,nivel,armadura,salud);
+            int velocidad=0;
+            int destreza=0;
+            int fuerza=0;
+            int nivel=0;
+            int armadura=0;
+            TipoPersonaje tipo = (TipoPersonaje)nroTipo;
+            
+            switch (tipo)
+            {
+                case TipoPersonaje.DiosNordico:
+                        velocidad = ValorAleatorio(3,5);
+                        destreza = ValorAleatorio(3,5);
+                        fuerza = ValorAleatorio(6,10);
+                        nivel = ValorAleatorio(3,5);
+                        armadura = ValorAleatorio(3,5);
+                        break;
+                case TipoPersonaje.DiosGriego:
+                        velocidad = ValorAleatorio(3,5);
+                        destreza = ValorAleatorio(3,5);
+                        fuerza = ValorAleatorio(3,5);
+                        nivel = ValorAleatorio(3,5);
+                        armadura = ValorAleatorio(6,10);
+                        break;
+                case TipoPersonaje.DiosEjipcio:
+                        velocidad = ValorAleatorio(3,5);
+                        destreza = ValorAleatorio(3,10);
+                        fuerza = ValorAleatorio(3,5);
+                        nivel = ValorAleatorio(3,5);
+                        armadura = ValorAleatorio(3,5);
+                        break;
+                case TipoPersonaje.DiosIndu:
+                        velocidad = ValorAleatorio(6,10);
+                        destreza = ValorAleatorio(3,5);
+                        fuerza = ValorAleatorio(3,5);
+                        nivel = ValorAleatorio(3,5);
+                        armadura = ValorAleatorio(3,5);
+                        break;
+                case TipoPersonaje.Demonio:
+                        velocidad = ValorAleatorio(3,5);
+                        destreza = ValorAleatorio(3,5);
+                        fuerza = ValorAleatorio(3,5);
+                        nivel = ValorAleatorio(6,10);
+                        armadura = ValorAleatorio(3,5);
+                        break;
+                case TipoPersonaje.Humano:
+                        velocidad = ValorAleatorio(6,8);
+                        destreza = ValorAleatorio(2,5);
+                        fuerza = ValorAleatorio(6,8);
+                        nivel = ValorAleatorio(2,5);
+                        armadura = ValorAleatorio(2,5);
+                        break;
+            }
+            
+            
+            Personaje Nuevo = new Personaje(tipo,nombre,apodo,/*fechaNac,*/edadPersonaje,velocidad,destreza,fuerza,nivel,armadura,salud,fraseCampeon);
 
             return Nuevo;
         }
@@ -76,35 +133,6 @@ namespace GeneracionPersonajes
 
     }
 
-    public class PersonajesJson
-    {
-        static public void GuardarPersonajes(string nombreArchivo,List<Personaje> Lista)
-        {
-            String formatoJson = JsonSerializer.Serialize(Lista);
-            File.WriteAllText(nombreArchivo, formatoJson);
-        }
-        static public List<Personaje> LeerPersonajes(string NombreArchivo){
-            var ListadoPersonajes = new List<Personaje>();
-
-            string TextoJson = File.ReadAllText(NombreArchivo);
-
-            if (!string.IsNullOrEmpty(TextoJson))
-            {
-                ListadoPersonajes = JsonSerializer.Deserialize<List<Personaje>>(TextoJson)!;
-            }
-            
-            return ListadoPersonajes;
-        }
-        static public bool Existe(string NombreArchivo)
-        {
-            if (File.Exists(NombreArchivo))
-            {
-                return true;
-            }else
-            {
-                return false;
-            }
-        }
-    }
+    
 
 }
