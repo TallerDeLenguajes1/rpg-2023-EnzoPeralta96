@@ -24,6 +24,8 @@ namespace Personajes
         private double salud;
         private string frase;
 
+        private ConsoleColor color;
+
         public string Nombre { get => nombre; set => nombre = value; }
         public string Apodo { get => apodo; set => apodo = value; }
         //public DateTime FechaNac { get => fechaNac; set => fechaNac = value; }
@@ -36,8 +38,9 @@ namespace Personajes
         public double Salud { get => salud; set => salud = value; }
         public TipoPersonaje Team { get => team; set => team = value; }
         public string Frase { get => frase; set => frase = value; }
+        public ConsoleColor Color { get => color; set => color = value; }
 
-        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, double salud,string frase)
+        public Personaje(TipoPersonaje team, string nombre, string apodo, /*DateTime fechaNac*/ int edad, int velocidad, int destreza, int fuerza, int nivel, int armadura, double salud,string frase, ConsoleColor color)
         {
             Team = team;
             Nombre = nombre;
@@ -51,11 +54,12 @@ namespace Personajes
             Armadura = armadura;
             Salud = salud;
             Frase = frase;
+            Color = color;
         }
     }
     public class FabricaPersonajes
     {
-        static public Personaje CrearPersonaje(int nroTipo, string nombre, String apodo,string fraseCampeon)
+        static public Personaje CrearPersonaje(int nroTipo, string nombre, String apodo,string fraseCampeon, ConsoleColor colorPersonaje)
         {
 
            /* int yearNac = ValorAleatorio(1,1900);   
@@ -121,7 +125,7 @@ namespace Personajes
             }
             
             
-            Personaje Nuevo = new Personaje(tipo,nombre,apodo,/*fechaNac,*/edadPersonaje,velocidad,destreza,fuerza,nivel,armadura,salud,fraseCampeon);
+            Personaje Nuevo = new Personaje(tipo,nombre,apodo,/*fechaNac,*/edadPersonaje,velocidad,destreza,fuerza,nivel,armadura,salud,fraseCampeon,colorPersonaje);
 
             return Nuevo;
         }
