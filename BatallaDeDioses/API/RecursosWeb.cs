@@ -11,7 +11,7 @@ namespace ConsumoAPI
             request.Method = "GET";
             request.ContentType = "application/json";
             request.Accept = "application/json";
-        
+
             try
             {
                 using (WebResponse response = request.GetResponse())
@@ -20,34 +20,31 @@ namespace ConsumoAPI
                     {
                         if (strReader != null)
                         {
-                           using (StreamReader objReader = new StreamReader(strReader))
-                           {
-                                 //// Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
-                              string responseBody = objReader.ReadToEnd();
-                              return JsonSerializer.Deserialize<FraseAPI>(responseBody);
-                           }
+                            using (StreamReader objReader = new StreamReader(strReader))
+                            {
+                                //// Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
+                                string responseBody = objReader.ReadToEnd();
+                                return JsonSerializer.Deserialize<FraseAPI>(responseBody);
+                            }
                         }
                     }
                 }
             }
             catch (WebException ex)
             {
-                Console.WriteLine("Error al acceder a la API web: "+ ex.Message);
+                Console.WriteLine("Error al acceder a la API web: " + ex.Message);
             }
-            return  null;
+            return null;
         }
-         //public static FraseAPI ObtnerDatosAPI() => ObtnerDatosAPI();
+        //public static FraseAPI ObtnerDatosAPI() => ObtnerDatosAPI();
 
-         public static string ObtnerInsulto()
-         {
+        public static string ObtnerInsulto()
+        {
             var datosAPI = obtenerDatosAPI();
             return datosAPI.insult;
-         }
-       
-    }
+        }
 
-  
-    
+    }
 }
 
 

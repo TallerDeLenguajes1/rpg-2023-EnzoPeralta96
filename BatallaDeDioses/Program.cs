@@ -1,9 +1,9 @@
 ﻿using Personajes;
 using ArchivosJson;
 using ConsumoAPI;
+namespace Juego;
 
-// agregar insultos al cominezo y luego cuando un jugador se vaya debilitando.
-// mostrar como en wp
+// mostrar listado historico
 internal class Program
 {
     private static void Main(string[] args)
@@ -12,9 +12,12 @@ internal class Program
         string ArchivoNombres = "Personajes/DatosPersonajes.txt";
         string ArchivoTitulo = "ArchivosTexto/NombreJuego.txt";
         string IntroJuego = "ArchivosTexto/IntroJuego.txt";
+        string ArchivoGanadores = "Json/ganadores.json";
+        string YouLose = "ArchivosTexto/Perdiste.txt";
+        string FinJuego = "ArchivosTexto/FinJuego.txt";
+        string YouWin = "ArchivosTexto/Ganaste.txt";
 
         var ListaDioses = new List<Personaje>();
-
 
         if (IniciarJuego(ArchivoJson, ArchivoNombres, ref ListaDioses))
         {
@@ -22,11 +25,15 @@ internal class Program
             int jugadorElegido;
             string inputJugador;
 
+            Helper.MostrarIntro(IntroJuego);
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Helper.MostrarTitulo(ArchivoTitulo);
+            Console.ResetColor();
+
             while (programaEnUso)
             {
-                MostrarIntro(IntroJuego);
-                MostrarTitulo(ArchivoTitulo);
-                MostrarListaEnCuadros(ListaDioses);
+                Helper.MostrarListaEnCuadros(ListaDioses);
 
                 do
                 {
@@ -40,6 +47,8 @@ internal class Program
                     int indexPlayer1 = jugadorElegido - 1;
                     Personaje player1 = ListaDioses[indexPlayer1];
                     ListaDioses.RemoveAt(indexPlayer1);
+                    Console.WriteLine("Dios elegido:"+player1.Nombre);
+
                     bool player1EnJuego = true;
                     int i = 1;
 
@@ -49,55 +58,79 @@ internal class Program
                         Personaje player2 = ListaDioses[indexPlayer2]; //elijo el rival
                         ListaDioses.RemoveAt(indexPlayer2); // remuevo el jugador perdido
 
-                        Console.WriteLine("-----Duelo Nro:{0}------\nPlayer 1:{1} VS Player 2:{2}\n", i, player1.Nombre, player2.Nombre);//presento jugadores
-                        Console.WriteLine("Player 1:{0}\nPlayer 2:{1}\n", MiConsumoAPI.ObtnerInsulto(), MiConsumoAPI.ObtnerInsulto()); // se bardeam
+                        Helper.PresentacionBatalla(i, player1, player2);
+                        Console.WriteLine();
+
+                        Console.ForegroundColor = player1.Color;
+                            Console.WriteLine("{0}:{1}", player1.Nombre, MiConsumoAPI.ObtnerInsulto());
+                        Console.ResetColor();
+
+                        Console.ForegroundColor = player2.Color;
+                            Console.WriteLine("\t\t\t\t\t\t\t\t\t\t{0}:{1}", player2.Nombre, MiConsumoAPI.ObtnerInsulto());
+                        Console.ResetColor();
+
+                        int k = 2;//variable para determinar posición de donde se muestra el ataque
 
                         while (player1.Salud > 0 && player2.Salud > 0) // Empieza pelea
                         {
-                            RealizarAtaque(player1, player2); // mostrar ataque como en wp
+                            RealizarAtaque(player1, player2, k); // mostrar ataque como en wp
+                            k++;
                             if (player2.Salud > 0)
                             {
-                                RealizarAtaque(player2, player1);
+                                RealizarAtaque(player2, player1, k);
+                                k++;
                             }
                         }
 
                         if (player1.Salud > 0) // si gana el player1
                         {
-                            player1.Salud = 100; // renueva vida para la proxima ronda
-                            MejorarHabilidad(player1);
-                            i++;
+                            FabricaPersonajes.MejorarHabilidad(player1); //renueva vida y mejorar hab.
+
+                            i++; // indice proxima pelea
+
                             Console.WriteLine("Dios:{0} eliminado!", player2.Nombre);
-                            Console.WriteLine("YOU WIN!\nCargando proxima pelea...");
-                            Console.WriteLine();
+                            Helper.MostrarTitulo(YouWin);
+
+                            if (ListaDioses.Count() > 0)
+                            {
+                                Helper.Escritura("Cargando proxima pelea...\n");
+                            }
+                            
                         }
                         else
                         {
                             player1EnJuego = false;
-                            Console.WriteLine("YOU LOSE\n|GAME OVER|");
+                            Helper.MostrarTitulo(YouLose);
                         }
                     }
 
                     if (player1EnJuego)
                     {
-                        Console.WriteLine("|Felicidades Campeón!|\n"); // json lista de ganadores y mensaje
-                        Console.WriteLine(player1.Frase);
+                        Console.ForegroundColor = player1.Color;
+                            Helper.Escritura(player1.Frase+"\n");
+                        Console.ResetColor();
+
+                        Helper.MostrarTitulo(FinJuego);
+                        
+                        Helper.Escritura("Eres el campeón indiscutible de este torneo, y tu nombre quedará grabado para la historia.\n");
+                        Ganadoresjson.GuardarGanadorEnJson(ArchivoGanadores, player1);
+                        //mostrarListaGanadores
                     }
 
                     Console.WriteLine("Para jugar de nuevo: presione una tecla");
                     Console.WriteLine("Presione 'Esc' para salir.");
-
                     ConsoleKeyInfo JugarDeNuevo = Console.ReadKey();
-
+                    
                     if (JugarDeNuevo.Key == ConsoleKey.Escape)
                     {
-                        programaEnUso = false;
                         Console.WriteLine("Saliendo...");
+                        programaEnUso = false;
+                        
                     }
                     else
                     {
                         ListaDioses = PersonajesJson.LeerPersonajes(ArchivoJson);
                     }
-
                 }
                 else
                 {
@@ -114,6 +147,7 @@ internal class Program
 
     }
 
+    
     private static bool IniciarJuego(string ArchivoJson, string ArchivoNombres, ref List<Personaje> ListaDioses)
     {
         bool iniciar = false;
@@ -124,9 +158,9 @@ internal class Program
         }
         else
         {
-            if (ExisteArchivo(ArchivoNombres))//si existe y no esta vacio.
+            if (Helper.ExisteArchivo(ArchivoNombres))//si existe y no esta vacio.
             {
-                CargarListaPersonajes(ListaDioses, ArchivoNombres);
+                FabricaPersonajes.CargarListaPersonajes(ListaDioses, ArchivoNombres);
                 PersonajesJson.GuardarPersonajes(ArchivoJson, ListaDioses);
                 iniciar = true;
             }
@@ -134,188 +168,20 @@ internal class Program
         return iniciar;
     }
 
-    private static void CargarListaPersonajes(List<Personaje> Lista, string NombresPersonajes)
-    {
-        var lineas = File.ReadAllLines(NombresPersonajes);
-        foreach (var linea in lineas)
-        {
-            string[] contenidoLinea = linea.Split(';');
-            string nombre = contenidoLinea[0];
-            string apodo = contenidoLinea[1];
-            int nroTipo = int.Parse(contenidoLinea[2]);
-            string frase = contenidoLinea[3];
-            ConsoleColor color = (ConsoleColor)Enum.Parse(typeof(ConsoleColor), contenidoLinea[4]);
-            var Personaje = FabricaPersonajes.CrearPersonaje(nroTipo, nombre, apodo, frase, color);
-            Lista.Add(Personaje);
-        }
-    }
-    private static void MostrarIntro(string IntroJuego)
-    {
-        if (ExisteArchivo(IntroJuego))
-        {
-            using (var intro = new StreamReader(IntroJuego))
-            {
-                while (!intro.EndOfStream)
-                {
-                    string lineaIntro = intro.ReadLine();
-                    foreach (var caracter in lineaIntro)
-                    {
-                        Console.Write(caracter);
-                        Thread.Sleep(15);
-                    }
-                }
-                intro.Close();
-                Console.WriteLine();
-            }
-        }
-    }
-
-    private static void MostrarTitulo(string ArchivoTitulo)
-    {
-        if (ExisteArchivo(ArchivoTitulo))
-        {
-            using (var tituloJuego = new StreamReader(ArchivoTitulo))
-            {
-                while (!tituloJuego.EndOfStream)
-                {
-                    string linea = tituloJuego.ReadLine();
-                    Console.WriteLine(linea);
-                }
-                tituloJuego.Close();
-                Console.WriteLine();
-            }
-        }
-    }
-
-    
-
-    private static void MostrarListaEnCuadros(List<Personaje> Lista)
-    {
-        Console.WriteLine("|| Listado de personajes ||");
-        int i = 1;
-        int recuadroAncho = 35; // Ancho del recuadro (ajústalo según sea necesario)
-        int anchoNombre = Lista.Max(p => p.Nombre.Length); // Calculamos el ancho máximo del nombre
-
-        foreach (var personaje in Lista)
-        {
-            Console.ForegroundColor = personaje.Color;
-            // Encabezado del recuadro
-            Console.WriteLine(new string('=', recuadroAncho));
-            Console.WriteLine("|" + CentrarTexto("DATOS", recuadroAncho - 2) + "|");
-            Console.WriteLine(new string('=', recuadroAncho));
-
-            // Datos del personaje
-            Console.WriteLine("| Dios Nro: {0,-3} {1}    |", i, new string(' ', recuadroAncho - 21));
-            Console.WriteLine("| Nombre: {0,-" + anchoNombre + "} {1} |", personaje.Nombre, new string(' ', recuadroAncho - 13 - anchoNombre));
-            Console.WriteLine(new string('=', recuadroAncho));
-            Console.WriteLine("|" + CentrarTexto("CARACTERISTICAS", recuadroAncho - 2) + "|");
-            Console.WriteLine(new string('=', recuadroAncho));
-            Console.WriteLine("| Velocidad: {0,-3} {1}       |", personaje.Velocidad, new string(' ', recuadroAncho - 25));
-            Console.WriteLine("| Destreza: {0,-3} {1}       |", personaje.Destreza, new string(' ', recuadroAncho - 24));
-            Console.WriteLine("| Fuerza: {0,-3} {1}       |", personaje.Fuerza, new string(' ', recuadroAncho - 22));
-            Console.WriteLine("| Nivel: {0,-3} {1}       |", personaje.Nivel, new string(' ', recuadroAncho - 21));
-            Console.WriteLine(new string('=', recuadroAncho));
-            Console.WriteLine();
-
-            Console.ResetColor();
-            i++;
-        }
-        Console.WriteLine("Elija un jugador: 1,2,...,10");
-    }
-
-    private static string CentrarTexto(string text, int width)
-    {
-        if (text.Length >= width)
-        {
-            return text;
-        }
-        else
-        {
-            return text.PadLeft((width + text.Length) / 2).PadRight(width);
-        }
-    }
-    private static void RealizarAtaque(Personaje playerAtaca, Personaje playerDefiende)
+    private static void RealizarAtaque(Personaje playerAtaca, Personaje playerDefiende, int k)
     {
         int cteAjuste = 500;
         int Ataque = (playerAtaca.Destreza * playerAtaca.Fuerza * playerAtaca.Nivel);
-        int Efectividad = FabricaPersonajes.ValorAleatorio(50, 101);
+        int Efectividad = FabricaPersonajes.ValorAleatorio(90, 101);
         int Defensa = playerDefiende.Armadura * playerDefiende.Velocidad;
         double DañoProvocado = ((Ataque * Efectividad) - Defensa) / (double)cteAjuste;
-        playerDefiende.Salud = playerDefiende.Salud - DañoProvocado;
+        playerAtaca.Puntaje += DañoProvocado;
+        playerDefiende.Salud -= DañoProvocado;
         if (playerDefiende.Salud < 0)
         {
             playerDefiende.Salud = 0;
         }
-        Console.ForegroundColor = playerAtaca.Color;
-        Console.WriteLine("{0} ATACA A {1}", playerAtaca.Nombre, playerDefiende.Nombre);
-        if (10<= playerDefiende.Salud && playerDefiende.Salud <= 40 )
-        {   
-            Console.ForegroundColor = playerDefiende.Color;
-            Console.WriteLine("Player 2:{0}", MiConsumoAPI.ObtnerInsulto());
-            Console.ForegroundColor = playerAtaca.Color;
-        }
-        Console.WriteLine("Daño provocado a {0}:{1}\nSalud:{2}", playerDefiende.Apodo, DañoProvocado, playerDefiende.Salud);
-        Console.WriteLine();
-       
-        Console.ResetColor();
-        
 
-    }
-    private static void MejorarHabilidad(Personaje player1)
-    {
-        int habilidadMejora = FabricaPersonajes.ValorAleatorio(1, 6);
-
-        switch (habilidadMejora)
-        {
-            case 1:
-                if (player1.Velocidad < 10)
-                {
-                    player1.Velocidad += 1;
-                }
-                break;
-            case 2:
-                if (player1.Destreza < 5)
-                {
-                    player1.Destreza += 1;
-                }
-                break;
-            case 3:
-                if (player1.Fuerza < 10)
-                {
-                    player1.Fuerza += 1;
-                }
-                break;
-            case 4:
-                if (player1.Nivel < 10)
-                {
-                    player1.Nivel += 1;
-                }
-                break;
-            case 5:
-                if (player1.Armadura < 10)
-                {
-                    player1.Armadura += 1;
-                }
-                break;
-        }
-    }
-    private static bool ExisteArchivo(string Archivo)
-    {
-        if (File.Exists(Archivo))
-        {
-            var info = new FileInfo(Archivo);
-            if (info.Length > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }
+        Helper.MostrarAtque(playerAtaca, playerDefiende, k, DañoProvocado);
+    }  
 }

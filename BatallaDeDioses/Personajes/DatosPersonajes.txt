@@ -1,10 +1,10 @@
-Thor;Dios del trueno;1;Por el poder de Mjolnir, defendere a Asgard y a los Nueve Reinos.;Blue
-Zeus;Dios de dioses;2;Como el soberano del Olimpo, mi palabra es ley y mi trueno es justicia.;Red
+Thor;Dios del trueno;1;Por el poder de Mjolnir, defendere a Asgard y a los Nueve Reinos.;DarkRed
+Zeus;Dios de dioses;2;Como el soberano del Olimpo, mi palabra es ley y mi trueno es justicia.;Blue
 Poseidon;Rey de los mares;2;En las profundidades del mar, mi ira puede desatar tormentas y calmar las aguas.;Cyan
-Hercules;El hijo de Zeus;6;Con fuerza y coraje, enfrentare cualquier desafio para redimir mi alma.;Blue
+Hercules;El hijo de Zeus;6;Con fuerza y coraje, enfrentare cualquier desafio para redimir mi alma.;Green
 Shiva;El destructor;4;En el ciclo eterno de la vida, soy el destructor y el creador, danzando en la danza cosmica.;Red
-Hades;El Señor del Inframundo;2;En el sombrio inframundo, los muertos encuentran su morada eterna bajo mi dominio.;Cyan
-Belzebu;Principe de los demonios;5;Como senior de las tinieblas, sembrare la discordia y tentare a las almas perdidas.;Green
-Odin;El padre de todos;1;Con sabiduria y conocimiento, guio a los dioses y a los hombres hacia su destino.;Blue
-Apolo;Dios del sol;2;Con mi lira y mis profecias, inspiro el arte y la musica en los corazones de los mortales.;Red
-Anubis;El guardian de las almas;3;Como guia de los difuntos, velo por el juicio justo y el paso al más alla.;Green
+Hades;El Señor del Inframundo;2;En el sombrio inframundo, los muertos encuentran su morada eterna bajo mi dominio.;White
+Belzebu;Principe de los demonios;5;Como senior de las tinieblas, sembrare la discordia y tentare a las almas perdidas.;DarkMagenta
+Odin;El padre de todos;1;Con sabiduria y conocimiento, guio a los dioses y a los hombres hacia su destino.;DarkGray
+Apolo;Dios del sol;2;Con mi lira y mis profecias, inspiro el arte y la musica en los corazones de los mortales.;Yellow
+Anubis;El guardian de las almas;3;Como guia de los difuntos, velo por el juicio justo y el paso al más alla.;DarkYellow
