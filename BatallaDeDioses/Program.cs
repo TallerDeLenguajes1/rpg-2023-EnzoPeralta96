@@ -3,9 +3,8 @@ using ArchivosJson;
 using ConsumoAPI;
 namespace Juego;
 
-// mostrar listado historico
 internal class Program
-{
+{   
     private static void Main(string[] args)
     {
         string ArchivoJson = "Json/personajes.json";
@@ -16,6 +15,7 @@ internal class Program
         string YouLose = "ArchivosTexto/Perdiste.txt";
         string FinJuego = "ArchivosTexto/FinJuego.txt";
         string YouWin = "ArchivosTexto/Ganaste.txt";
+        string ArchivoElegir = "ArchivosTexto/ElegirJugador.txt";
 
         var ListaDioses = new List<Personaje>();
 
@@ -27,16 +27,18 @@ internal class Program
 
             Helper.MostrarIntro(IntroJuego);
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = ConsoleColor.DarkCyan;
             Helper.MostrarTitulo(ArchivoTitulo);
             Console.ResetColor();
 
+            Helper.MostrarListaEnCuadros(ListaDioses);
+            Helper.MostrarTitulo(ArchivoElegir);
+
             while (programaEnUso)
             {
-                Helper.MostrarListaEnCuadros(ListaDioses);
-
                 do
                 {
+                    Console.WriteLine("\nPresione 1,2,...,10 para elegir");   
                     inputJugador = Console.ReadLine();
                 } while (string.IsNullOrEmpty(inputJugador));
 
@@ -44,23 +46,24 @@ internal class Program
 
                 if (resultado && (1 <= jugadorElegido && jugadorElegido <= 10))
                 {
-                    int indexPlayer1 = jugadorElegido - 1;
-                    Personaje player1 = ListaDioses[indexPlayer1];
-                    ListaDioses.RemoveAt(indexPlayer1);
+                    int indexPlayer1 = jugadorElegido - 1; // indice del jugador elegido
+                    Personaje player1 = ListaDioses[indexPlayer1]; //guardar jugador 
+                    ListaDioses.RemoveAt(indexPlayer1);//y quitar de la lista
                     Console.WriteLine("Dios elegido:"+player1.Nombre);
 
                     bool player1EnJuego = true;
-                    int i = 1;
+                    int i = 1; //contador de peleas
 
                     while (ListaDioses.Count >= 1 && player1EnJuego)
                     {
-                        int indexPlayer2 = FabricaPersonajes.ValorAleatorio(0, ListaDioses.Count);
+                        int indexPlayer2 = FabricaPersonajes.ValorAleatorio(0, ListaDioses.Count);// indice aleatorio para rival
                         Personaje player2 = ListaDioses[indexPlayer2]; //elijo el rival
                         ListaDioses.RemoveAt(indexPlayer2); // remuevo el jugador perdido
 
                         Helper.PresentacionBatalla(i, player1, player2);
                         Console.WriteLine();
 
+                        //consumo API
                         Console.ForegroundColor = player1.Color;
                             Console.WriteLine("{0}:{1}", player1.Nombre, MiConsumoAPI.ObtnerInsulto());
                         Console.ResetColor();
@@ -73,7 +76,7 @@ internal class Program
 
                         while (player1.Salud > 0 && player2.Salud > 0) // Empieza pelea
                         {
-                            RealizarAtaque(player1, player2, k); // mostrar ataque como en wp
+                            RealizarAtaque(player1, player2, k); // mostrar ataque como chat, para eso sirve K
                             k++;
                             if (player2.Salud > 0)
                             {
@@ -114,7 +117,7 @@ internal class Program
                         
                         Helper.Escritura("Eres el campeón indiscutible de este torneo, y tu nombre quedará grabado para la historia.\n");
                         Ganadoresjson.GuardarGanadorEnJson(ArchivoGanadores, player1);
-                        //mostrarListaGanadores
+                        Helper.MostrarRanking(ArchivoGanadores);
                     }
 
                     Console.WriteLine("Para jugar de nuevo: presione una tecla");
@@ -123,14 +126,16 @@ internal class Program
                     
                     if (JugarDeNuevo.Key == ConsoleKey.Escape)
                     {
-                        Console.WriteLine("Saliendo...");
+                        Helper.MostrarTitulo(ArchivoTitulo);
                         programaEnUso = false;
-                        
                     }
                     else
                     {
                         ListaDioses = PersonajesJson.LeerPersonajes(ArchivoJson);
+                        Helper.MostrarListaEnCuadros(ListaDioses);
+                        Helper.MostrarTitulo(ArchivoElegir);
                     }
+                    
                 }
                 else
                 {

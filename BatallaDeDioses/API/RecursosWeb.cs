@@ -36,12 +36,17 @@ namespace ConsumoAPI
             }
             return null;
         }
-        //public static FraseAPI ObtnerDatosAPI() => ObtnerDatosAPI();
 
         public static string ObtnerInsulto()
         {
             var datosAPI = obtenerDatosAPI();
-            return datosAPI.insult;
+            if (datosAPI!=null)
+            {
+                return datosAPI.insult;
+            }else
+            {
+                return "KJA JA JA, ZOPENCO!";
+            }
         }
 
     }

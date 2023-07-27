@@ -1,5 +1,6 @@
 using Personajes;
 using ConsumoAPI;
+using ArchivosJson;
 namespace Juego;
 
 
@@ -71,8 +72,7 @@ public static class Helper
 
             i++;
         }
-        MostrarTitulo("ArchivosTexto/ElegirJugador.txt");
-        Console.WriteLine("\nPresione 1,2,...,10 para elegir");
+       
     }
 
     private static string CentrarTexto(string text, int width)
@@ -201,6 +201,16 @@ public static class Helper
         {
             Console.Write(caracter);
             Thread.Sleep(15);
+        }
+    }
+
+    public static void MostrarRanking(string CampeonesJson)
+    {
+        var ListaGanadores = Ganadoresjson.LeerGanadores(CampeonesJson);
+        MostrarTitulo("ArchivosTexto/Historial.txt");
+        foreach (var ganador in ListaGanadores)
+        {
+            Console.WriteLine("\t"+ganador.NombreUsuario+"\t\t\t\t\t\t"+ganador.Ranking+"\t\t\t\t\t\t"+"{0:N2}",ganador.Puntaje);
         }
     }
 }
