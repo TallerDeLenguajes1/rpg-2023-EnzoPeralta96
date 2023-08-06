@@ -60,6 +60,7 @@ namespace Personajes
             Color = color;
             Puntaje = puntaje;
         }
+        public bool IsALive() => salud > 0;
     }
     public class FabricaPersonajes
     {
@@ -192,6 +193,8 @@ namespace Personajes
             }
 
         }
+
+        
 
         static public int ValorAleatorio(int a, int b)
         {

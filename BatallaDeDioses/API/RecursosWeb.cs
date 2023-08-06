@@ -40,13 +40,8 @@ namespace ConsumoAPI
         public static string ObtnerInsulto()
         {
             var datosAPI = obtenerDatosAPI();
-            if (datosAPI!=null)
-            {
-                return datosAPI.insult;
-            }else
-            {
-                return "KJA JA JA, ZOPENCO!";
-            }
+            if (datosAPI ==null) return "KJA JA JA, ZOPENCO!";
+            return datosAPI.insult;
         }
 
     }

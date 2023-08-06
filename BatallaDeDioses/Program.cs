@@ -38,18 +38,18 @@ internal class Program
             {
                 do
                 {
-                    Console.WriteLine("\nPresione 1,2,...,10 para elegir");   
+                    Console.WriteLine("\nPresione 1,2,...,10 para elegir");
                     inputJugador = Console.ReadLine();
                 } while (string.IsNullOrEmpty(inputJugador));
 
                 bool resultado = int.TryParse(inputJugador, out jugadorElegido);
 
-                if (resultado && (1 <= jugadorElegido && jugadorElegido <= 10))
+                if (resultado && IsValidPlayer(jugadorElegido))
                 {
                     int indexPlayer1 = jugadorElegido - 1; // indice del jugador elegido
                     Personaje player1 = ListaDioses[indexPlayer1]; //guardar jugador 
                     ListaDioses.RemoveAt(indexPlayer1);//y quitar de la lista
-                    Console.WriteLine("Dios elegido:"+player1.Nombre);
+                    Console.WriteLine("Dios elegido:" + player1.Nombre);
 
                     bool player1EnJuego = true;
                     int i = 1; //contador de peleas
@@ -65,27 +65,27 @@ internal class Program
 
                         //consumo API
                         Console.ForegroundColor = player1.Color;
-                            Console.WriteLine("{0}:{1}", player1.Nombre, MiConsumoAPI.ObtnerInsulto());
+                        Console.WriteLine("{0}:{1}", player1.Nombre, MiConsumoAPI.ObtnerInsulto());
                         Console.ResetColor();
 
                         Console.ForegroundColor = player2.Color;
-                            Console.WriteLine("\t\t\t\t\t\t\t\t\t\t{0}:{1}", player2.Nombre, MiConsumoAPI.ObtnerInsulto());
+                        Console.WriteLine("\t\t\t\t\t\t\t\t\t\t{0}:{1}", player2.Nombre, MiConsumoAPI.ObtnerInsulto());
                         Console.ResetColor();
 
                         int k = 2;//variable para determinar posición de donde se muestra el ataque
 
-                        while (player1.Salud > 0 && player2.Salud > 0) // Empieza pelea
+                        while (PlayersAlives(player1, player2)) // Empieza pelea
                         {
                             RealizarAtaque(player1, player2, k); // mostrar ataque como chat, para eso sirve K
                             k++;
-                            if (player2.Salud > 0)
+                            if (player2.IsALive())
                             {
                                 RealizarAtaque(player2, player1, k);
                                 k++;
                             }
                         }
 
-                        if (player1.Salud > 0) // si gana el player1
+                        if (player1.IsALive()) // si gana el player1
                         {
                             FabricaPersonajes.MejorarHabilidad(player1); //renueva vida y mejorar hab.
 
@@ -98,7 +98,7 @@ internal class Program
                             {
                                 Helper.Escritura("Cargando proxima pelea...\n");
                             }
-                            
+
                         }
                         else
                         {
@@ -110,11 +110,11 @@ internal class Program
                     if (player1EnJuego)
                     {
                         Console.ForegroundColor = player1.Color;
-                            Helper.Escritura(player1.Frase+"\n");
+                        Helper.Escritura(player1.Frase + "\n");
                         Console.ResetColor();
 
                         Helper.MostrarTitulo(FinJuego);
-                        
+
                         Helper.Escritura("Eres el campeón indiscutible de este torneo, y tu nombre quedará grabado para la historia.\n");
                         Ganadoresjson.GuardarGanadorEnJson(ArchivoGanadores, player1);
                         Helper.MostrarRanking(ArchivoGanadores);
@@ -123,7 +123,7 @@ internal class Program
                     Console.WriteLine("Para jugar de nuevo: presione una tecla");
                     Console.WriteLine("Presione 'Esc' para salir.");
                     ConsoleKeyInfo JugarDeNuevo = Console.ReadKey();
-                    
+
                     if (JugarDeNuevo.Key == ConsoleKey.Escape)
                     {
                         Helper.MostrarTitulo(ArchivoTitulo);
@@ -135,7 +135,7 @@ internal class Program
                         Helper.MostrarListaEnCuadros(ListaDioses);
                         Helper.MostrarTitulo(ArchivoElegir);
                     }
-                    
+
                 }
                 else
                 {
@@ -152,7 +152,16 @@ internal class Program
 
     }
 
-    
+    private static bool PlayersAlives(Personaje player1, Personaje player2)
+    {
+        return player1.Salud > 0 && player2.Salud > 0;
+    }
+
+    private static bool IsValidPlayer(int jugadorElegido)
+    {
+        return (1 <= jugadorElegido && jugadorElegido <= 10);
+    }
+
     private static bool IniciarJuego(string ArchivoJson, string ArchivoNombres, ref List<Personaje> ListaDioses)
     {
         bool iniciar = false;
